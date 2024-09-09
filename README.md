@@ -36,3 +36,8 @@ Your solution will be evaluated based on:
 4. Begin your optimization process. Document your changes and reasoning in this README.md file when done.
 
 Good luck!
+
+## Bonus Extensions
+
+Right now when the chatbot is generating a response, even if users speak and try to interrupt the chatbot, the chatbot will talk over the user and not register what they're saying.
+This isn't realistic - humans usually don't continue to talk when interrupted. How can we implement more realistic conversational behavior for the chatbot when it is interrupted?
