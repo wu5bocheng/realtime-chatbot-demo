@@ -35,6 +35,13 @@ Your solution will be evaluated based on:
 3. Run the current implementation to understand its behavior by running `python main.py`
 4. Begin your optimization process. Document your changes and reasoning in this README.md file when done.
 
+## Poetry Setup
+
+If you're getting stuck with installation issues, we offer an alternative Poetry-based installation method. 
+1. Install [Poetry](https://python-poetry.org/docs/#installing-with-pipx)
+2. Install all requirements by running `poetry install`
+3. Run the current implementation by running `poetry run python3 main.py`
+
 Good luck!
 
 ## Bonus Extensions
