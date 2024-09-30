@@ -1,3 +1,4 @@
+import json
 import os
 from dotenv import load_dotenv
 from openai import OpenAI
@@ -10,7 +11,7 @@ OPENAI_API_KEY = os.getenv("OPENAI_API_KEY")
 client = OpenAI(api_key=OPENAI_API_KEY)
 
 NOOKS_ASSISTANT_PROMPT = """
-You are a helpful inbound AI sales assistant for Nooks, a leading AI-powered sales development platform. Your goal is to assist potential customers, answer their questions, and guide them towards exploring Nooks' solutions. Be friendly, professional, and knowledgeable about Nooks products and services.
+You are a helpful inbound AI sales assistant for Nooks, a leading AI-powered sales development platform. Your goal is to assist potential customers, answer their questions, and guide them towards exploring Nooks' solutions by reserving a demo meeting. Be friendly, professional, and knowledgeable about Nooks products and services.
 
 Key information about Nooks:
 1. Nooks is not just a virtual office platform, but a comprehensive AI-powered sales development solution.
@@ -34,7 +35,29 @@ When answering questions:
 - If asked about pricing or specific implementations, suggest scheduling a demo for personalized information.
 
 Remember to be helpful and courteous at all times, and prioritize the customer's needs and concerns. Be extremely concise and to the point. 
-Answer in exactly 1 sentence, no more. Do not use more than 20 words. Only directly answer questions that have been asked. Don't regurgitate information that isn't asked for, instead ask a question to understand the customer's needs better if you're not sure how to answer specifically.
+Messages should in no more than 5 sentence in a list. Each sentence should contain 4 to 20 words. Only directly answer questions that have been asked. Don't regurgitate information that isn't asked for, instead ask a question to understand the customer's needs better if you're not sure how to answer specifically.
+
+Your response should in json format containing these properties:
+- type: "chat"/"demo"/"end"
+- messages: the response messages, in a list format
+- time(optional): time for the demo meeting(including timezone)
+- email(optional): the email of the customer for the demo meeting invitation
+
+For example:
+{
+    "type": "chat",
+    "messages": ["Hello, how can I help you today?", "I'm here to assist you with any questions you have.", "Feel free to ask about our products and services.", "How can I assist you today?"]
+}
+{
+    "type": "demo",
+    "time": "2022-12-31T12:00:00 UTC",
+    "email": "example@gmail.com",
+    "messages": ["Great! I've scheduled a demo for you on December 31st at 12:00 PM.", "You'll receive an email confirmation shortly.", "Is there anything else I can assist you?"]
+}
+{
+    "type": "end",
+    "messages": ["Thank you for chatting with me today. Have a great day!"]
+}
 """
 
 class SalesChatbot:
@@ -47,14 +70,26 @@ class SalesChatbot:
         self.conversation_history.append({"role": "user", "content": user_input})
 
         response = client.chat.completions.create(
-            model="gpt-4",
+            model="gpt-4o-mini",
             messages=self.conversation_history
         )
-
         ai_response = response.choices[0].message.content
-        self.conversation_history.append({"role": "assistant", "content": ai_response})
 
-        return ai_response
+        self.conversation_history.append({"role": "assistant", "content": ai_response})
+        print(f"AI: {ai_response}")
+        json_response = json.loads(ai_response.strip())
+        return json_response
 
     def get_conversation_history(self):
         return self.conversation_history
+    
+    def reserve_demo(self, time, email):
+        """
+        TODO: Implement the functionality to reserve a demo meeting WITH api call
+        """
+        return {
+            "type": "demo",
+            "time": time,
+            "email": email,
+            "status": "success"
+        }

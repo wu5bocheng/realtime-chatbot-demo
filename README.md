@@ -1,50 +1,32 @@
 # AI Sales Assistant Chatbot
 
-## Project Goal
+## Highlights
 
-This project aims to create a realistic, low-latency chatbot that functions as an AI sales assistant for Nooks, an AI-powered sales development platform.
-The chatbot responds when the user falls silent for some time, simulating a natural conversation flow.
+1. I change the sales chatbot prompt to respond in json format and support various functions. I use in-context learning to improve the chatbot's performance (because the current task is not very complex, I don't need to use chain-of-thought for now). Further improvements can be made by adding RAG to the chatbot, including the real bussiness senarios and previous customer interactions to improve the chatbot's personalization and performance.
 
-## Current Implementation
+2. I made the chatbot able to respond multiple sentences at a time, and to optimize the tts performance, I generate the audio of all sentences in background and multiple threads and play them in sequence. This can improve the response speed of the chatbot.
 
-The system consists of three main components:
+3. To support the interruption of the chatbot, I use a threading signal to control the chatbot's response. When the chatbot is interrupted, the chatbot will stop responding and wait for the next command. This can improve the user experience of the chatbot.
 
-1. Speech-to-text (STT) using NeMo for real-time transcription
-2. A sales chatbot powered by OpenAI's GPT-4 model
-3. Text-to-speech (TTS) using ElevenLabs for voice output
+4. I added a preamble to inform the user that the nooks chatbot is ready to respond. This can improve the user experience of interacting with the chatbot.
 
-The chatbot listens to user input, transcribes it in real-time, and generates a response when the user stops speaking. The AI's response is then converted to speech and played back to the user.
+5. To cope with the unexpected latency of the gpt or tts response time, I will randomly play some of the pre-generated audio to the user to inform the user that the chatbot is still processing the response. Also, to avoid the chatbot start responding when the pre-generated audio is playing, I use a threading signal to control the chatbot's response.
 
-## Task
+6. I changed the play from ffmpeg to pydub, which can improve the audio playing performance and reduce the latency of the audio playing. but please `pip install sounddevice soundfile` first. I have added them to the requirements.txt.
 
-Assume that you are not allowed to modify the base models used (you must use Nvidia's FastConformer model for STT, OpenAI's GPT-4 for the chatbot, and ElevenLabs with this voice setting for TTS).
-How would you modify the code to make the chatbot lower latency & respond faster?
+7. I supported the auto demo book which will call the `chatbot.reserve_demo()` function once the chatbot detects the user is interested in the demo and provides some contact and time information. I also support the auto termination of the chatbot after the end of conversation is detected.
 
-### Evaluation Criteria
+## Further Improvements
 
-Your solution will be evaluated based on:
+1. For the acoustic echo cancellation problem, I suggest using py-webrtc as the input audio processing library. If you test without a headphone, the echo of output audio will be captured by the input microphone, and the echo will be fed back to the output audio. This will cause a feedback loop and the output audio will be distorted. So I highly recommend using a headphone when testing the audio processing algorithm or using an acoustic echo cancellation algorithm to remove the echo from the output audio.
 
-1. Reduction in overall latency
-2. Maintenance of conversation quality and realism (i.e the chatbot doesn't interrupt the human speaker while they're in the middle of speaking)
-3. Code quality and clarity of explanation
+2. Modify the play function of elevenlabs package to support shorter interval between the sentences. Because the current play function will wait for the previous audio to finish before playing the next audio, this will cause a delay between the sentences.
 
-## Getting Started
+## Short Demo
 
-1. Review the existing code in `main.py`, `lib/sales_chatbot.py`, and `lib/elevenlabs_tts.py`
-2. Install the requirements by running `pip install -r requirements.txt` (or use a virtual environment if you prefer)
-3. Run the current implementation to understand its behavior by running `python main.py`
-4. Begin your optimization process. Document your changes and reasoning in this README.md file when done.
+Here is a short demo video of the chatbot:
+<video width="720" height="480" controls>
 
-## Poetry Setup
-
-If you're getting stuck with installation issues, we offer an alternative Poetry-based installation method. 
-1. Install [Poetry](https://python-poetry.org/docs/#installing-with-pipx)
-2. Install all requirements by running `poetry install`
-3. Run the current implementation by running `poetry run python3 main.py`
-
-Good luck!
-
-## Bonus Extensions
-
-Right now when the chatbot is generating a response, even if users speak and try to interrupt the chatbot, the chatbot will talk over the user and not register what they're saying.
-This isn't realistic - humans usually don't continue to talk when interrupted. How can we implement more realistic conversational behavior for the chatbot when it is interrupted?
+  <source src="assets/demo_video.mp4" type="video/mp4">
+  Your browser does not support the video tag. Please refer to the video in the assets folder directly.
+</video>
