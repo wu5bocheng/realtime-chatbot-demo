@@ -26,6 +26,7 @@
 
 Here is a short demo video of the chatbot:
 <video width="720" height="480" controls>
+
   <source src="assets/demo_video.mp4" type="video/mp4">
-  Your browser does not support the video tag.
+  Your browser does not support the video tag. Please refer to the video in the assets folder directly.
 </video>
